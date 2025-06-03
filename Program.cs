@@ -45,13 +45,19 @@ class Program
 
     public static void Main()
     {
-        Raylib.InitWindow(800, 800, "Snek");
 
         // CONFIGURATION SECTION 
         // (Settings page in a game for example)
+        int windowWidth = 800;
+        int windowHeight = 800;
         int gridRows = 20;
         int gridCols = 20;
-        int squareSize = 40;
+
+        int squareSize = windowHeight / gridRows; 
+
+        int radius = squareSize / 2;
+
+        Raylib.InitWindow(windowWidth, windowHeight, "Snek");
 
         // STATE SECTION 
         // Just means all the things that your program has to keep in mind while it's running.
@@ -61,8 +67,8 @@ class Program
         int snakeCol = 10;
         
          // I need to randomise the location of the apple here so it only does it once per run not every loop        
-        int appleRow = rng.Next(0, 20);
-        int appleCol = rng.Next(0, 20);
+        int appleRow = rng.Next(0, gridRows);
+        int appleCol = rng.Next(0, gridCols);
         Vector2 center = CellToCenter(appleRow, appleCol, squareSize);
 
         // where the actual loop that we want running goes (frames changing)
@@ -84,7 +90,7 @@ class Program
             DrawGrid(gridRows, gridCols, squareSize);
 
             // Draw the circle, it's randomised once per run now 
-            Raylib.DrawCircleV(center, 20, Color.Red);
+            Raylib.DrawCircleV(center, radius, Color.Red);
 
             Raylib.DrawRectangleRec(CellToRectangle(snakeCol, snakeRow, squareSize), Color.Green);
 
