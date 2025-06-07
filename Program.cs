@@ -54,8 +54,10 @@ class Program
         int gridCols = 20;
 
         int squareSize = windowHeight / gridRows; 
-
         int radius = squareSize / 2;
+
+        double startingSpeed = 1;
+        int[,] D = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
         Raylib.InitWindow(windowWidth, windowHeight, "Snek");
 
@@ -65,7 +67,12 @@ class Program
         // Location of snek. 
         int snakeRow = 10;
         int snakeCol = 10;
-        
+
+        int direction = 0;
+       
+        double lastFrameMoved = 0;
+        double secondsToMove = startingSpeed;
+
          // I need to randomise the location of the apple here so it only does it once per run not every loop        
         int appleRow = rng.Next(0, gridRows);
         int appleCol = rng.Next(0, gridCols);
@@ -77,10 +84,19 @@ class Program
 
             // UPDATE STATE SECTION 
             // Code to make the snek move and draw the snek 
-            if (Raylib.IsKeyPressed(KeyboardKey.Up)) snakeRow -= 1;
-            if (Raylib.IsKeyPressed(KeyboardKey.Down)) snakeRow += 1;
-            if (Raylib.IsKeyPressed(KeyboardKey.Left)) snakeCol -= 1;
-            if (Raylib.IsKeyPressed(KeyboardKey.Right)) snakeCol += 1;
+            if (Raylib.IsKeyPressed(KeyboardKey.Up)) direction = 3;
+            if (Raylib.IsKeyPressed(KeyboardKey.Down)) direction = 1;
+            if (Raylib.IsKeyPressed(KeyboardKey.Left)) direction = 2;
+            if (Raylib.IsKeyPressed(KeyboardKey.Right)) direction = 0;
+
+            // Code to automatically move snek, directionless kinda
+            double currentFrame = Raylib.GetTime();
+            if (currentFrame - lastFrameMoved >= secondsToMove)
+            {
+                snakeRow += D[direction, 0];
+                snakeCol += D[direction, 1];
+                lastFrameMoved = currentFrame;  
+            }
 
             // DRAWING SECTION 
             Raylib.BeginDrawing();
