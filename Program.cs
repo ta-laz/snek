@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.ComponentModel;
+using System.Numerics;
 using Raylib_cs;
 
 namespace Snek;
@@ -24,8 +25,8 @@ class Program
 
         // Uhhh, we're converting thaaa indices of the cells into 
         // the centers of where they need to drawn (in the pixel world :o )
-        float centerX = size * (row + 0.5f);
-        float centerY = size * (col + 0.5f);
+        float centerX = size * (col + 0.5f);
+        float centerY = size * (row + 0.5f);
         return new Vector2(centerX, centerY); }
 
     static void DrawGrid(int rows, int cols, int size)
@@ -56,7 +57,9 @@ class Program
         int squareSize = windowHeight / gridRows; 
         int radius = squareSize / 2;
 
-        double startingSpeed = 1;
+        double startingSpeed = 0.5;
+        double speedFactor = 0.5; 
+
         int[,] D = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
         Raylib.InitWindow(windowWidth, windowHeight, "Snek");
@@ -72,6 +75,8 @@ class Program
        
         double lastFrameMoved = 0;
         double secondsToMove = startingSpeed;
+
+        int score = 0;
 
          // I need to randomise the location of the apple here so it only does it once per run not every loop        
         int appleRow = rng.Next(0, gridRows);
@@ -95,7 +100,47 @@ class Program
             {
                 snakeRow += D[direction, 0];
                 snakeCol += D[direction, 1];
-                lastFrameMoved = currentFrame;  
+                lastFrameMoved = currentFrame;
+                // Console.WriteLine("Snake row:" + (snakeRow));
+                // Console.WriteLine("Snake col:" + (snakeCol));
+                // Console.WriteLine("Apple row:" + (appleRow));
+                // Console.WriteLine("Apple col:" + (appleCol)); 
+                Console.WriteLine("Snake row:" + (snakeRow));
+                Console.WriteLine("Snake col:" + (snakeCol));
+                Console.WriteLine("direction:" + (direction));
+            }
+
+
+            if (snakeRow >= gridRows)
+            {
+                Console.WriteLine("The snake has gone too far down");
+                snakeRow = 0;
+             }
+            if (snakeRow < 0)
+            {
+                Console.WriteLine("The snake has gone too far up");
+                snakeRow = gridRows - 1;
+             }
+            if (snakeCol >= gridCols)
+            {
+                Console.WriteLine("The snake has gone too far right");
+                snakeCol = 0;
+            }
+            if (snakeCol < 0)
+            {
+                Console.WriteLine("The snake has gone too far left");
+                snakeCol = gridCols - 1;
+            }
+
+            // Apple eating situation 
+            if ((snakeRow == appleRow) && (snakeCol == appleCol))
+            {
+                score += 1;
+                Console.WriteLine("Score:" + score);
+                secondsToMove *= speedFactor;
+                appleRow = rng.Next(0, gridRows);
+                appleCol = rng.Next(0, gridCols);
+                center = CellToCenter(appleRow, appleCol, squareSize);
             }
 
             // DRAWING SECTION 
