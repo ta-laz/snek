@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Data;
 using System.Numerics;
+using System.Security.Cryptography;
 using Raylib_cs;
 
 namespace Snek;
@@ -50,15 +52,15 @@ class Program
         // CONFIGURATION SECTION 
         // (Settings page in a game for example)
         int windowWidth = 800;
-        int windowHeight = 800;
+        int windowHeight = 900;
         int gridRows = 20;
         int gridCols = 20;
 
-        int squareSize = windowHeight / gridRows; 
+        int squareSize = windowWidth / gridRows; 
         int radius = squareSize / 2;
 
-        double startingSpeed = 0.5;
-        double speedFactor = 0.5; 
+        double startingSpeed = 1;
+        double speedFactor = 0.8; 
 
         int[,] D = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
 
@@ -70,6 +72,10 @@ class Program
         // Location of snek. 
         int snakeRow = 10;
         int snakeCol = 10;
+
+        int topScore = 11;
+        int[] prevLocRow = new int[topScore];
+        int[] prevLocCol = new int[topScore];
 
         int direction = 0;
        
@@ -101,36 +107,75 @@ class Program
                 snakeRow += D[direction, 0];
                 snakeCol += D[direction, 1];
                 lastFrameMoved = currentFrame;
+
+                // wrapping around situ
+                if (snakeRow >= gridRows)
+                {
+                    Console.WriteLine("The snake has gone too far down");
+                    snakeRow = 0;
+                }
+                if (snakeRow < 0)
+                {
+                    Console.WriteLine("The snake has gone too far up");
+                    snakeRow = gridRows - 1;
+                }
+                if (snakeCol >= gridCols)
+                {
+                    Console.WriteLine("The snake has gone too far right");
+                    snakeCol = 0;
+                }
+                if (snakeCol < 0)
+                {
+                    Console.WriteLine("The snake has gone too far left");
+                    snakeCol = gridCols - 1;
+                }
+
+                int a = prevLocRow.Length - 2;
+                while (a >= 0) {
+                    prevLocRow[a + 1] = prevLocRow[a];
+                    prevLocCol[a + 1] = prevLocCol[a];
+                    a = a -1;
+                }
+                prevLocRow[0] = snakeRow;
+                prevLocCol[0] = snakeCol;
+
+                // printing to check
+                Console.WriteLine("rows");
+                foreach (int row in prevLocRow)
+                {
+                    Console.WriteLine(row);
+                }
+                Console.WriteLine("cols");
+                foreach (int col in prevLocCol)
+                {
+                    Console.WriteLine(col);
+                }
                 // Console.WriteLine("Snake row:" + (snakeRow));
                 // Console.WriteLine("Snake col:" + (snakeCol));
-                // Console.WriteLine("Apple row:" + (appleRow));
-                // Console.WriteLine("Apple col:" + (appleCol)); 
-                Console.WriteLine("Snake row:" + (snakeRow));
-                Console.WriteLine("Snake col:" + (snakeCol));
-                Console.WriteLine("direction:" + (direction));
+                // Console.WriteLine("direction:" + (direction));
             }
 
-
-            if (snakeRow >= gridRows)
-            {
-                Console.WriteLine("The snake has gone too far down");
-                snakeRow = 0;
-             }
-            if (snakeRow < 0)
-            {
-                Console.WriteLine("The snake has gone too far up");
-                snakeRow = gridRows - 1;
-             }
-            if (snakeCol >= gridCols)
-            {
-                Console.WriteLine("The snake has gone too far right");
-                snakeCol = 0;
-            }
-            if (snakeCol < 0)
-            {
-                Console.WriteLine("The snake has gone too far left");
-                snakeCol = gridCols - 1;
-            }
+            // Staying within the bounds of the grid 
+            // if (snakeRow >= gridRows)
+            // {
+            //     Console.WriteLine("The snake has gone too far down");
+            //     snakeRow = 0;
+            //  }
+            // if (snakeRow < 0)
+            // {
+            //     Console.WriteLine("The snake has gone too far up");
+            //     snakeRow = gridRows - 1;
+            //  }
+            // if (snakeCol >= gridCols)
+            // {
+            //     Console.WriteLine("The snake has gone too far right");
+            //     snakeCol = 0;
+            // }
+            // if (snakeCol < 0)
+            // {
+            //     Console.WriteLine("The snake has gone too far left");
+            //     snakeCol = gridCols - 1;
+            // }
 
             // Apple eating situation 
             if ((snakeRow == appleRow) && (snakeCol == appleCol))
@@ -154,7 +199,17 @@ class Program
             Raylib.DrawCircleV(center, radius, Color.Red);
 
             Raylib.DrawRectangleRec(CellToRectangle(snakeCol, snakeRow, squareSize), Color.Green);
+            // if score is 4, then you want to store the last 3 variables in prev location
+            // so for each score that is -1, you want it to draw a square 
+            // Console.WriteLine("Starting drawing snek tail");
 
+            int valueOfIndex = 0;
+            while (valueOfIndex <= score)
+            {
+                Raylib.DrawRectangleRec(CellToRectangle(prevLocCol[valueOfIndex], prevLocRow[valueOfIndex], squareSize), Color.Green);
+                valueOfIndex = valueOfIndex + 1;
+            } 
+       
             Raylib.EndDrawing();
         }
 
