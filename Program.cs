@@ -56,10 +56,12 @@ class Program
         int gridRows = 20;
         int gridCols = 20;
 
+        bool gameOver = false;
+
         int squareSize = windowWidth / gridRows; 
         int radius = squareSize / 2;
 
-        double startingSpeed = 1;
+        double startingSpeed = 1.0;
         double speedFactor = 0.8; 
 
         int[,] D = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
@@ -89,129 +91,135 @@ class Program
         int appleCol = rng.Next(0, gridCols);
         Vector2 center = CellToCenter(appleRow, appleCol, squareSize);
 
-        // where the actual loop that we want running goes (frames changing)
-        while (!Raylib.WindowShouldClose())
+        // FIGURING OUT THE APPLE OVERLAP 
+        for (int i = 0; i < score; i++)
         {
-
-            // UPDATE STATE SECTION 
-            // Code to make the snek move and draw the snek 
-            if (Raylib.IsKeyPressed(KeyboardKey.Up)) direction = 3;
-            if (Raylib.IsKeyPressed(KeyboardKey.Down)) direction = 1;
-            if (Raylib.IsKeyPressed(KeyboardKey.Left)) direction = 2;
-            if (Raylib.IsKeyPressed(KeyboardKey.Right)) direction = 0;
-
-            // Code to automatically move snek, directionless kinda
-            double currentFrame = Raylib.GetTime();
-            if (currentFrame - lastFrameMoved >= secondsToMove)
+            if (appleRow == prevLocRow[i] && appleCol == prevLocCol[i])
             {
-                snakeRow += D[direction, 0];
-                snakeCol += D[direction, 1];
-                lastFrameMoved = currentFrame;
-
-                // wrapping around situ
-                if (snakeRow >= gridRows)
-                {
-                    Console.WriteLine("The snake has gone too far down");
-                    snakeRow = 0;
-                }
-                if (snakeRow < 0)
-                {
-                    Console.WriteLine("The snake has gone too far up");
-                    snakeRow = gridRows - 1;
-                }
-                if (snakeCol >= gridCols)
-                {
-                    Console.WriteLine("The snake has gone too far right");
-                    snakeCol = 0;
-                }
-                if (snakeCol < 0)
-                {
-                    Console.WriteLine("The snake has gone too far left");
-                    snakeCol = gridCols - 1;
-                }
-
-                int a = prevLocRow.Length - 2;
-                while (a >= 0) {
-                    prevLocRow[a + 1] = prevLocRow[a];
-                    prevLocCol[a + 1] = prevLocCol[a];
-                    a = a -1;
-                }
-                prevLocRow[0] = snakeRow;
-                prevLocCol[0] = snakeCol;
-
-                // printing to check
-                Console.WriteLine("rows");
-                foreach (int row in prevLocRow)
-                {
-                    Console.WriteLine(row);
-                }
-                Console.WriteLine("cols");
-                foreach (int col in prevLocCol)
-                {
-                    Console.WriteLine(col);
-                }
-                // Console.WriteLine("Snake row:" + (snakeRow));
-                // Console.WriteLine("Snake col:" + (snakeCol));
-                // Console.WriteLine("direction:" + (direction));
-            }
-
-            // Staying within the bounds of the grid 
-            // if (snakeRow >= gridRows)
-            // {
-            //     Console.WriteLine("The snake has gone too far down");
-            //     snakeRow = 0;
-            //  }
-            // if (snakeRow < 0)
-            // {
-            //     Console.WriteLine("The snake has gone too far up");
-            //     snakeRow = gridRows - 1;
-            //  }
-            // if (snakeCol >= gridCols)
-            // {
-            //     Console.WriteLine("The snake has gone too far right");
-            //     snakeCol = 0;
-            // }
-            // if (snakeCol < 0)
-            // {
-            //     Console.WriteLine("The snake has gone too far left");
-            //     snakeCol = gridCols - 1;
-            // }
-
-            // Apple eating situation 
-            if ((snakeRow == appleRow) && (snakeCol == appleCol))
-            {
-                score += 1;
-                Console.WriteLine("Score:" + score);
-                secondsToMove *= speedFactor;
                 appleRow = rng.Next(0, gridRows);
                 appleCol = rng.Next(0, gridCols);
-                center = CellToCenter(appleRow, appleCol, squareSize);
+                i = i - 1;
             }
-
-            // DRAWING SECTION 
-            Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.White);
-
-            // Nested for loops wow look at me 
-            DrawGrid(gridRows, gridCols, squareSize);
-
-            // Draw the circle, it's randomised once per run now 
-            Raylib.DrawCircleV(center, radius, Color.Red);
-
-            Raylib.DrawRectangleRec(CellToRectangle(snakeCol, snakeRow, squareSize), Color.Green);
-            // if score is 4, then you want to store the last 3 variables in prev location
-            // so for each score that is -1, you want it to draw a square 
-            // Console.WriteLine("Starting drawing snek tail");
-
-            int valueOfIndex = 0;
-            while (valueOfIndex <= score)
-            {
-                Raylib.DrawRectangleRec(CellToRectangle(prevLocCol[valueOfIndex], prevLocRow[valueOfIndex], squareSize), Color.Green);
-                valueOfIndex = valueOfIndex + 1;
-            } 
-       
-            Raylib.EndDrawing();
         }
+
+        // where the actual loop that we want running goes (frames changing)
+        while (!Raylib.WindowShouldClose())
+            {
+
+                // UPDATE STATE SECTION 
+                // Code to make the snek move and draw the snek 
+                if (Raylib.IsKeyPressed(KeyboardKey.Up)) direction = 3;
+                if (Raylib.IsKeyPressed(KeyboardKey.Down)) direction = 1;
+                if (Raylib.IsKeyPressed(KeyboardKey.Left)) direction = 2;
+                if (Raylib.IsKeyPressed(KeyboardKey.Right)) direction = 0;
+
+                // Code to automatically move snek, directionless kinda
+                double currentFrame = Raylib.GetTime();
+                if (!gameOver && currentFrame - lastFrameMoved >= secondsToMove)
+                {
+                    snakeRow += D[direction, 0];
+                    snakeCol += D[direction, 1];
+                    lastFrameMoved = currentFrame;
+
+                    // wrapping around situ
+                    if (snakeRow >= gridRows)
+                    {
+                        // Console.WriteLine("The snake has gone too far down");
+                        snakeRow = 0;
+                    }
+                    if (snakeRow < 0)
+                    {
+                        // Console.WriteLine("The snake has gone too far up");
+                        snakeRow = gridRows - 1;
+                    }
+                    if (snakeCol >= gridCols)
+                    {
+                        // Console.WriteLine("The snake has gone too far right");
+                        snakeCol = 0;
+                    }
+                    if (snakeCol < 0)
+                    {
+                        // Console.WriteLine("The snake has gone too far left");
+                        snakeCol = gridCols - 1;
+                    }
+
+                    int a = prevLocRow.Length - 2;
+                    while (a >= 0)
+                    {
+                        prevLocRow[a + 1] = prevLocRow[a];
+                        prevLocCol[a + 1] = prevLocCol[a];
+                        a = a - 1;
+                    }
+                    prevLocRow[0] = snakeRow;
+                    prevLocCol[0] = snakeCol;
+
+                    int b = 2; // this is set as 2 as otherwise it just ignores the last part of the tail 
+                    while (b <= score)
+                    {
+                        if (snakeRow == prevLocRow[b] && snakeCol == prevLocCol[b])
+                        {
+                            gameOver = true;
+                        }
+                        b = b + 1;
+                    }
+
+                    // printing to check
+                    // Console.WriteLine("rows");
+                    // foreach (int row in prevLocRow)
+                    // {
+                    //     Console.WriteLine(row);
+                    // }
+                    // Console.WriteLine("cols");
+                    // foreach (int col in prevLocCol)
+                    // {
+                    //     Console.WriteLine(col);
+                    // }
+
+                }
+
+                // Apple eating situation 
+                if ((snakeRow == appleRow) && (snakeCol == appleCol))
+                {
+                    score += 1;
+                    Console.WriteLine("Score:" + score);
+                    secondsToMove *= speedFactor;
+                    appleRow = rng.Next(0, gridRows);
+                    appleCol = rng.Next(0, gridCols);
+                    center = CellToCenter(appleRow, appleCol, squareSize);
+                }
+
+                // DRAWING SECTION 
+                Raylib.BeginDrawing();
+                Raylib.ClearBackground(Color.White);
+
+                // Nested for loops wow look at me 
+                DrawGrid(gridRows, gridCols, squareSize);
+
+                // Draw the circle, it's randomised once per run now 
+                Raylib.DrawCircleV(center, radius, Color.Red);
+
+                Raylib.DrawRectangleRec(CellToRectangle(snakeCol, snakeRow, squareSize), Color.Green);
+
+                // making sure the drawing is only happening after first apple eaten to avoid boxes in the corner
+                if (score > 0)
+                {
+                    for (int i = 1; i <= score; i += 1)
+                    {
+                        Raylib.DrawRectangleRec(CellToRectangle(prevLocCol[i], prevLocRow[i], squareSize), Color.Green);
+                    }
+                }
+
+                // code to display the score
+                Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
+                Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
+
+                if (gameOver)
+                {
+                    Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
+                }
+
+                Raylib.EndDrawing();
+            }
 
         Raylib.CloseWindow();
     }
