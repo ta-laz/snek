@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using System.Data;
-using System.Numerics;
-using System.Security.Cryptography;
+﻿using System.Numerics;
 using Raylib_cs;
 
 namespace Snek;
