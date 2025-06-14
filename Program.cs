@@ -13,15 +13,6 @@ class Program
     // trying to draw the apple shape? 
     static Vector2 CellToCenter(int row, int col, int size)
     {
-
-        // 0, 0, 40 -> 20, 20
-        // 20 = 0 + 20;
-        // 20 = 0 + 20
-
-        // 1, 1, 40 -> 60, 60
-        // 60 = 1 + 20;
-        // 60 = 1 + 20
-
         // Uhhh, we're converting thaaa indices of the cells into 
         // the centers of where they need to drawn (in the pixel world :o )
         float centerX = size * (col + 0.5f);
