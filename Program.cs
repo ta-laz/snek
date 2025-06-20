@@ -112,17 +112,17 @@ class Program
 
             // UPDATE STATE SECTION 
             // Code to make the snek move and draw the snek 
-            if (Raylib.IsKeyPressed(KeyboardKey.Up)) snake.direction = 3;
-            if (Raylib.IsKeyPressed(KeyboardKey.Down)) snake.direction = 1;
-            if (Raylib.IsKeyPressed(KeyboardKey.Left)) snake.direction = 2;
-            if (Raylib.IsKeyPressed(KeyboardKey.Right)) snake.direction = 0;
+            if (Raylib.IsKeyPressed(KeyboardKey.Up)) snake.SetDirection(Snek.Direction.Up);
+            if (Raylib.IsKeyPressed(KeyboardKey.Down)) snake.SetDirection(Snek.Direction.Down);
+            if (Raylib.IsKeyPressed(KeyboardKey.Left)) snake.SetDirection(Snek.Direction.Left);
+            if (Raylib.IsKeyPressed(KeyboardKey.Right)) snake.SetDirection(Snek.Direction.Right);
 
             // Code to automatically move snek, directionless kinda
             double currentFrame = Raylib.GetTime();
             if (!gameOver && currentFrame - lastFrameMoved >= secondsToMove)
             {
                 lastFrameMoved = currentFrame;
-                snake.Move(gridRows, gridCols); 
+                snake.Move(gridRows, gridCols);
                 gameOver = snake.CheckOverlap(score);
             }
 

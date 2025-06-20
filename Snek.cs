@@ -6,10 +6,18 @@ namespace Snek;
 
 public class Snek
 {
+    public enum Direction
+    {
+        Up = 3,
+        Down = 1,
+        Left = 2, 
+        Right = 0, 
+    }
+    
     // starting position and direction of the snake
     public int snakeRow = 10;
     public int snakeCol = 10;
-    public int direction = 0;
+    public Direction direction = Direction.Right;
 
     // direction in which it can move
     int[,] D = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
@@ -26,8 +34,8 @@ public class Snek
 // methods now
     public void Move(int gridRows, int gridCols)
     {
-        snakeRow += D[direction, 0];
-        snakeCol += D[direction, 1];
+        snakeRow += D[(int)direction, 0];
+        snakeCol += D[(int)direction, 1];
 
         //keeps track of all of the snake
         int a = prevLocRow.Length - 2;
@@ -63,9 +71,9 @@ public class Snek
         }
     }
 
-    public void ChangeDirection()
+    public void SetDirection(Direction direction)
     {
-
+        this.direction = direction;
     }
 
     public void Grow()
