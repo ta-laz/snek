@@ -78,10 +78,9 @@ class Program
         // FIGURING OUT THE APPLE OVERLAP 
         for (int i = 0; i < score; i++)
         {
-            if (apple.appleRow == snake.prevLocRow[i] && apple.appleCol == snake.prevLocCol[i])
+            if (apple.InvalidPosition(i, score, snake))
             {
-                apple.appleRow = rng.Next(0, gridRows);
-                apple.appleCol = rng.Next(0, gridCols);
+                apple.SetPosition(gridRows, gridCols);
                 i = i - 1;
             }
         }

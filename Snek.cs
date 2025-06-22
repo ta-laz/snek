@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Raylib_cs;
 
@@ -114,9 +115,12 @@ public class Apple
         int appleCol = rng.Next(0, gridCols);
 
     }
-
-    // public bool InvalidPosition()
-    // {
-        
-    // } 
+    public bool InvalidPosition(int i, int score, Snek snake)
+    {
+        if (appleRow == snake.prevLocRow[i] && appleCol == snake.prevLocCol[i])
+        {
+            return true;
+        }
+        return false;
+    } 
 }
