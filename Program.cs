@@ -4,30 +4,6 @@ using Raylib_cs;
 
 namespace Snek;
 
-// public class Snek
-// {
-//     public void Move()
-//     {
-
-//     }
-
-//     public void ChangeDirection()
-//     {
-        
-//     }
-
-//     public void Grow()
-//     {
-        
-//     }
-
-//     public void CheckOverlap()
-//     {
-        
-//     }
-
-
-// }
 class Program
 {
     static Rectangle CellToRectangle(int row, int col, int size)
@@ -78,9 +54,11 @@ class Program
         double startingSpeed = 1.0;
         double speedFactor = 0.8;
 
+        int maximumLength = 11;
+
         Raylib.InitWindow(windowWidth, windowHeight, "Snek");
 
-        Snek snake = new(11);
+        Snek snake = new(maximumLength);
 
         // STATE SECTION 
         // Just means all the things that your program has to keep in mind while it's running.
@@ -90,18 +68,20 @@ class Program
 
         int score = 0;
 
-        // I need to randomise the location of the apple here so it only does it once per run not every loop        
-        int appleRow = rng.Next(0, gridRows);
-        int appleCol = rng.Next(0, gridCols);
-        Vector2 center = CellToCenter(appleRow, appleCol, squareSize);
+        // I need to randomise the location of the apple here so it only does it once per run not every loop 
+        Apple apple = new();
+
+        apple.SetPosition(gridRows, gridCols);
+
+        Vector2 center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
 
         // FIGURING OUT THE APPLE OVERLAP 
         for (int i = 0; i < score; i++)
         {
-            if (appleRow == snake.prevLocRow[i] && appleCol == snake.prevLocCol[i])
+            if (apple.appleRow == snake.prevLocRow[i] && apple.appleCol == snake.prevLocCol[i])
             {
-                appleRow = rng.Next(0, gridRows);
-                appleCol = rng.Next(0, gridCols);
+                apple.appleRow = rng.Next(0, gridRows);
+                apple.appleCol = rng.Next(0, gridCols);
                 i = i - 1;
             }
         }
@@ -111,13 +91,13 @@ class Program
         {
 
             // UPDATE STATE SECTION 
-            // Code to make the snek move and draw the snek 
+            // Code to set direction based on keyboard input
             if (Raylib.IsKeyPressed(KeyboardKey.Up)) snake.SetDirection(Snek.Direction.Up);
             if (Raylib.IsKeyPressed(KeyboardKey.Down)) snake.SetDirection(Snek.Direction.Down);
             if (Raylib.IsKeyPressed(KeyboardKey.Left)) snake.SetDirection(Snek.Direction.Left);
             if (Raylib.IsKeyPressed(KeyboardKey.Right)) snake.SetDirection(Snek.Direction.Right);
 
-            // Code to automatically move snek, directionless kinda
+            // Code to move Snek and check for overlap 
             double currentFrame = Raylib.GetTime();
             if (!gameOver && currentFrame - lastFrameMoved >= secondsToMove)
             {
@@ -127,14 +107,14 @@ class Program
             }
 
             // Apple eating situation 
-            if ((snake.snakeRow == appleRow) && (snake.snakeCol == appleCol))
+            if (snake.HasEaten(apple.appleRow, apple.appleCol))
             {
                 score += 1;
                 Console.WriteLine("Score:" + score);
                 secondsToMove *= speedFactor;
-                appleRow = rng.Next(0, gridRows);
-                appleCol = rng.Next(0, gridCols);
-                center = CellToCenter(appleRow, appleCol, squareSize);
+                apple.appleRow = rng.Next(0, gridRows);
+                apple.appleCol = rng.Next(0, gridCols);
+                center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
             }
 
             // DRAWING SECTION 

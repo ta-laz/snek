@@ -76,9 +76,13 @@ public class Snek
         this.direction = direction;
     }
 
-    public void Grow()
+    public bool HasEaten(int appleRow, int appleCol)
     {
-    
+        if ((snakeRow == appleRow) && (snakeCol == appleCol))
+        {
+            return true;
+        }
+        return false;
     }
 
     public bool CheckOverlap(int score)
@@ -95,4 +99,24 @@ public class Snek
         return false;
     }
 
+}
+
+public class Apple
+{
+    public int appleRow;
+    public int appleCol;
+
+    static Random rng = new Random();
+
+    public void SetPosition(int gridRows, int gridCols)
+    {
+        int appleRow = rng.Next(0, gridRows);
+        int appleCol = rng.Next(0, gridCols);
+
+    }
+
+    // public bool InvalidPosition()
+    // {
+        
+    // } 
 }
