@@ -68,22 +68,42 @@ class Program
 
         int score = 0;
 
-        // I need to randomise the location of the apple here so it only does it once per run not every loop 
-        Apple apple = new();
+        // Create a new apple
+        Apple apple = new(snake, gridRows, gridCols, score);
 
-        apple.SetPosition(gridRows, gridCols);
+        // BROKEN ^ fix the constructor 
+        // You need:
+        // Apple is on snake - apple.Overlaps(snake) -> true 
+        //                     ^ replaces HasEaten
+        //                     go through all coords, if match 
+        //                     return true 
+        // Apple constructor - new Apple(snake, gridRows, gridCols)
+        // apple = new(snake, gridRows, gridCols);
+        //          \-> generate coordinates
+        //            | -> if overlaps ^
+        //            | -> else move on
+
 
         Vector2 center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
 
+        // apple.SetPosition(gridRows, gridCols);
+
         // FIGURING OUT THE APPLE OVERLAP 
-        for (int i = 0; i < score; i++)
-        {
-            if (apple.InvalidPosition(i, score, snake))
-            {
-                apple.SetPosition(gridRows, gridCols);
-                i = i - 1;
-            }
-        }
+        // for (int i = 0; i < score; i++)
+        // {
+        //     if (apple.InvalidPosition(i, score, snake))
+        //     {
+        //         apple.SetPosition(gridRows, gridCols);
+        //         i = i - 1;
+        //     }
+        // } [0000000000000]
+        //    ^    
+        //                    x 
+        // LOOP 
+        // if(snake.HasEaten(apple)) {
+        //   score++;
+
+        // }
 
         // where the actual loop that we want running goes (frames changing)
         while (!Raylib.WindowShouldClose())
@@ -106,6 +126,21 @@ class Program
             }
 
             // Apple eating situation 
+            // 1. Check if the snake head overlaps with apple 
+            // 2. If yes, update score +1 
+            // 3. Speed up the snake 
+            // 4. Respawn the apple 
+            // 5. Update the center of where the apple needs to be drawn
+
+            // if (snake.Overlaps(apple.appleRow, apple.appleCol, score))
+            // {
+            //     score += 1;
+            //     Console.WriteLine("Score:" + score);
+            //     secondsToMove *= speedFactor;
+            //     apple.Respawn(snake, gridRows, gridCols, score);
+            //     center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
+            // }
+            // old code
             if (snake.HasEaten(apple.appleRow, apple.appleCol))
             {
                 score += 1;
@@ -120,7 +155,6 @@ class Program
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.White);
 
-            // Nested for loops wow look at me 
             DrawGrid(gridRows, gridCols, squareSize);
 
             // Draw the circle, it's randomised once per run now 
@@ -131,9 +165,12 @@ class Program
             // making sure the drawing is only happening after first apple eaten to avoid boxes in the corner
             if (score > 0)
             {
-                for (int i = 1; i <= score; i += 1)
+                for (int i = 0; i <= score; i += 1)
                 {
                     Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
+                    Console.WriteLine("body part of snake " + i);
+                    Console.WriteLine("row" + snake.prevLocRow[i]);
+                    Console.WriteLine("col" + snake.prevLocCol[i]);
                 }
             }
 
