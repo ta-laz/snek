@@ -132,24 +132,22 @@ class Program
             // 4. Respawn the apple 
             // 5. Update the center of where the apple needs to be drawn
 
-            // if (snake.Overlaps(apple.appleRow, apple.appleCol, score))
+            if (snake.Overlaps(apple.appleRow, apple.appleCol, ref score))
+            {
+                secondsToMove *= speedFactor; //if i include this will it not be too big?
+                apple.Respawn(snake, gridRows, gridCols, score);
+                center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
+            }
+            // old code
+            // if (snake.HasEaten(apple.appleRow, apple.appleCol))
             // {
             //     score += 1;
             //     Console.WriteLine("Score:" + score);
             //     secondsToMove *= speedFactor;
-            //     apple.Respawn(snake, gridRows, gridCols, score);
+            //     apple.appleRow = rng.Next(0, gridRows);
+            //     apple.appleCol = rng.Next(0, gridCols);
             //     center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
             // }
-            // old code
-            if (snake.HasEaten(apple.appleRow, apple.appleCol))
-            {
-                score += 1;
-                Console.WriteLine("Score:" + score);
-                secondsToMove *= speedFactor;
-                apple.appleRow = rng.Next(0, gridRows);
-                apple.appleCol = rng.Next(0, gridCols);
-                center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
-            }
 
             // DRAWING SECTION 
             Raylib.BeginDrawing();

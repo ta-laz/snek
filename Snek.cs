@@ -11,10 +11,10 @@ public class Snek
     {
         Up = 3,
         Down = 1,
-        Left = 2, 
-        Right = 0, 
+        Left = 2,
+        Right = 0,
     }
-    
+
     // starting position and direction of the snake
     public int snakeRow = 10;
     public int snakeCol = 10;
@@ -25,9 +25,10 @@ public class Snek
 
     // storing the last position in the arrays based on top score
     public int[] prevLocRow;
-    public int[] prevLocCol; 
-    
-    public Snek(int topScore) {
+    public int[] prevLocCol;
+
+    public Snek(int topScore)
+    {
         prevLocRow = new int[topScore];
         prevLocCol = new int[topScore];
     }
@@ -89,11 +90,13 @@ public class Snek
         return false;
     }
 
-    public bool Overlaps(int row, int col, int score)
+    public bool Overlaps(int row, int col, ref int score)
     {
         // 1. Check the head 
         if (snakeRow == row && snakeCol == col)
         {
+            score += 1;
+            Console.WriteLine("Score:" + score);
             return true;
         }
         else    // 2. Check the rest of the body through loop with PrevLoc
@@ -109,67 +112,68 @@ public class Snek
         }
     }
 
-    public bool CheckOverlap(int score)
+    //     public bool CheckOverlap(int score)
+    //     {
+    //         int b = 2; // this is set as 2 as otherwise it just ignores the last part of the tail 
+    //         while (b <= score)
+    //         {
+    //             if (snakeRow == prevLocRow[b] && snakeCol == prevLocCol[b])
+    //             {
+    //                 return true;
+    //             }
+    //             b = b + 1;
+    //         }
+    //         return false;
+    //     }
+
+    // }
+    /// //////////////////////////////////////////
+    public class Apple
     {
-        int b = 2; // this is set as 2 as otherwise it just ignores the last part of the tail 
-        while (b <= score)
+        public int appleRow;
+        public int appleCol;
+
+        static Random rng = new Random();
+
+        // constructor:
+        public Apple(Snek snake, int gridRows, int gridCols, int score)
         {
-            if (snakeRow == prevLocRow[b] && snakeCol == prevLocCol[b])
-            {
-                return true;
-            }
-            b = b + 1;
+            this.Respawn(snake, gridRows, gridCols, score);
         }
-        return false;
-    }
 
-}
-/// //////////////////////////////////////////
-public class Apple
-{
-    public int appleRow;
-    public int appleCol;
-
-    static Random rng = new Random();
-
-    // constructor:
-    public Apple(Snek snake, int gridRows, int gridCols, int score)
-    {
-        this.Respawn(snake, gridRows, gridCols, score);
-    }
-
-    public void Respawn(Snek snake, int gridRows, int gridCols, int score)
-    {
-        appleRow = rng.Next(0, gridRows);
-        appleCol = rng.Next(0, gridCols);
-
-         /* check if apple overlaps with any part of the snake  */
-        while (snake.Overlaps(appleRow, appleCol, score))
+        public void Respawn(Snek snake, int gridRows, int gridCols, int score)
         {
             appleRow = rng.Next(0, gridRows);
             appleCol = rng.Next(0, gridCols);
-        }
-    }
 
-    public void Overlaps(Snek snake, int score, int gridRows, int gridCols)
-    {
-        // if the head overlaps, then add to the score
-        // I dont think this bit should be here cause 
-        // the HasEaten is used to do more stuff
-
-        // if (appleRow == snake.snakeRow && appleCol == snake.snakeCol)
-        // {
-        //     score += 1;
-        // }
-        // if body overlaps then respawn apple 
-        for (int i = 0; i < score; i++)
-        {
-            while (appleRow == snake.prevLocRow[i] && appleCol == snake.prevLocCol[i])
+            /* check if apple overlaps with any part of the snake  */
+            while (snake.Overlaps(appleRow, appleCol, ref score))
             {
                 appleRow = rng.Next(0, gridRows);
                 appleCol = rng.Next(0, gridCols);
-                i = -1;
-                break;
+            }
+        }
+
+        public void Overlaps(Snek snake, int score, int gridRows, int gridCols)
+        {
+            // if the head overlaps, then add to the score
+            // I dont think this bit should be here cause 
+            // the HasEaten is used to do more stuff
+
+            // if (appleRow == snake.snakeRow && appleCol == snake.snakeCol)
+            // {
+            //     score += 1;
+            // }
+            // if body overlaps then respawn apple 
+            for (int i = 0; i < score; i++)
+            {
+                while (appleRow == snake.prevLocRow[i] && appleCol == snake.prevLocCol[i])
+                {
+                    appleRow = rng.Next(0, gridRows);
+                    appleCol = rng.Next(0, gridCols);
+                    i = -1;
+                    break;
+                }
             }
         }
     }
