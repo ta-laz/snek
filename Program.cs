@@ -33,7 +33,7 @@ class Program
         }
     }
 
-    // This is a random number generator that allows me to use it for the apple placement later    
+    // Random number generator  
     static Random rng = new Random();
 
     public static void Main()
@@ -168,9 +168,6 @@ class Program
                 for (int i = 0; i <= score; i += 1)
                 {
                     Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
-                    Console.WriteLine("body part of snake " + i);
-                    Console.WriteLine("row" + snake.prevLocRow[i]);
-                    Console.WriteLine("col" + snake.prevLocCol[i]);
                 }
             }
 
