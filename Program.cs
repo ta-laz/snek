@@ -33,6 +33,41 @@ class Program
         }
     }
 
+    public void Draw(int gridRows, int gridCols, int squareSize, Snek snake, Apple apple, int score, int windowWidth, bool gameOver, Vector2 center, int radius)
+    {
+        Raylib.BeginDrawing();
+        Raylib.ClearBackground(Color.White);
+        DrawGrid(gridRows, gridCols, squareSize);
+
+        // Draw the apple
+        Raylib.DrawCircleV(center, radius, Color.Red);
+
+        // Draw the head of the snake  
+        Raylib.DrawRectangleRec(CellToRectangle(snake.snakeCol, snake.snakeRow, squareSize), Color.Green);
+
+        // Draw the body of the snake 
+        if (score > 0)
+        {
+            for (int i = 0; i <= score; i += 1)
+            {
+                Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
+            }
+        }
+
+        // Display the score
+        Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
+        Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
+
+        // Display game over 
+        if (gameOver)
+        {
+            Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
+        }
+
+        // End the drawing
+        Raylib.EndDrawing();
+    }
+
     // Random number generator  
     static Random rng = new Random();
 
@@ -84,7 +119,7 @@ class Program
         //            | -> else move on
 
 
-        Vector2 center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
+        Vector2 center = CellToCenter(apple.row, apple.col, squareSize);
 
         // apple.SetPosition(gridRows, gridCols);
 
@@ -122,8 +157,30 @@ class Program
             {
                 lastFrameMoved = currentFrame;
                 snake.Move(gridRows, gridCols);
-                gameOver = snake.CheckOverlap(score);
+                Console.WriteLine(snake.snakeRow);
+                Console.WriteLine(snake.snakeCol);
+                
+                foreach (var item in snake.prevLocRow)
+                {
+                    Console.Write(item.ToString(), ", ");
+                }
+                Console.WriteLine();
+
+                foreach (var item in snake.prevLocCol)
+                {
+                    Console.Write(item.ToString(), ", ");
+                }
+                Console.WriteLine();
+
+                gameOver = snake.Overlaps(snake.snakeRow, snake.snakeCol, score, skipHead: true);
             }
+
+
+
+            // for the bit above I tried to use Overlaps but it breaks because it checks against the head so it's game over from the first move. I trued to do a condiition thing bool skiphead = false in the method but that also breaks after the first apple was eaten. 
+
+
+
 
             // Apple eating situation 
             // 1. Check if the snake head overlaps with apple 
@@ -132,11 +189,13 @@ class Program
             // 4. Respawn the apple 
             // 5. Update the center of where the apple needs to be drawn
 
-            if (snake.Overlaps(apple.appleRow, apple.appleCol, ref score))
+            if (snake.Overlaps(apple.row, apple.col, score))
             {
+                score += 1;
+                Console.WriteLine("Score:" + score);
                 secondsToMove *= speedFactor; //if i include this will it not be too big?
                 apple.Respawn(snake, gridRows, gridCols, score);
-                center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
+                center = CellToCenter(apple.row, apple.col, squareSize);
             }
             // old code
             // if (snake.HasEaten(apple.appleRow, apple.appleCol))
