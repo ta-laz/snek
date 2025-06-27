@@ -33,40 +33,40 @@ class Program
         }
     }
 
-    public void Draw(int gridRows, int gridCols, int squareSize, Snek snake, Apple apple, int score, int windowWidth, bool gameOver, Vector2 center, int radius)
-    {
-        Raylib.BeginDrawing();
-        Raylib.ClearBackground(Color.White);
-        DrawGrid(gridRows, gridCols, squareSize);
+    // public void Draw(int gridRows, int gridCols, int squareSize, Snek snake, Apple apple, int score, int windowWidth, bool gameOver, Vector2 center, int radius)
+    // {
+    //     Raylib.BeginDrawing();
+    //     Raylib.ClearBackground(Color.White);
+    //     DrawGrid(gridRows, gridCols, squareSize);
 
-        // Draw the apple
-        Raylib.DrawCircleV(center, radius, Color.Red);
+    //     // Draw the apple
+    //     Raylib.DrawCircleV(center, radius, Color.Red);
 
-        // Draw the head of the snake  
-        Raylib.DrawRectangleRec(CellToRectangle(snake.snakeCol, snake.snakeRow, squareSize), Color.Green);
+    //     // Draw the head of the snake  
+    //     Raylib.DrawRectangleRec(CellToRectangle(snake.snakeCol, snake.snakeRow, squareSize), Color.Green);
 
-        // Draw the body of the snake 
-        if (score > 0)
-        {
-            for (int i = 0; i <= score; i += 1)
-            {
-                Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
-            }
-        }
+    //     // Draw the body of the snake 
+    //     if (score > 0)
+    //     {
+    //         for (int i = 0; i <= score; i += 1)
+    //         {
+    //             Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
+    //         }
+    //     }
 
-        // Display the score
-        Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
-        Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
+    //     // Display the score
+    //     Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
+    //     Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
 
-        // Display game over 
-        if (gameOver)
-        {
-            Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
-        }
+    //     // Display game over 
+    //     if (gameOver)
+    //     {
+    //         Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
+    //     }
 
-        // End the drawing
-        Raylib.EndDrawing();
-    }
+    //     // End the drawing
+    //     Raylib.EndDrawing();
+    // }
 
     // Random number generator  
     static Random rng = new Random();
@@ -106,39 +106,7 @@ class Program
         // Create a new apple
         Apple apple = new(snake, gridRows, gridCols, score);
 
-        // BROKEN ^ fix the constructor 
-        // You need:
-        // Apple is on snake - apple.Overlaps(snake) -> true 
-        //                     ^ replaces HasEaten
-        //                     go through all coords, if match 
-        //                     return true 
-        // Apple constructor - new Apple(snake, gridRows, gridCols)
-        // apple = new(snake, gridRows, gridCols);
-        //          \-> generate coordinates
-        //            | -> if overlaps ^
-        //            | -> else move on
-
-
         Vector2 center = CellToCenter(apple.row, apple.col, squareSize);
-
-        // apple.SetPosition(gridRows, gridCols);
-
-        // FIGURING OUT THE APPLE OVERLAP 
-        // for (int i = 0; i < score; i++)
-        // {
-        //     if (apple.InvalidPosition(i, score, snake))
-        //     {
-        //         apple.SetPosition(gridRows, gridCols);
-        //         i = i - 1;
-        //     }
-        // } [0000000000000]
-        //    ^    
-        //                    x 
-        // LOOP 
-        // if(snake.HasEaten(apple)) {
-        //   score++;
-
-        // }
 
         // where the actual loop that we want running goes (frames changing)
         while (!Raylib.WindowShouldClose())
@@ -175,13 +143,6 @@ class Program
                 gameOver = snake.Overlaps(snake.snakeRow, snake.snakeCol, score, skipHead: true);
             }
 
-
-
-            // for the bit above I tried to use Overlaps but it breaks because it checks against the head so it's game over from the first move. I trued to do a condiition thing bool skiphead = false in the method but that also breaks after the first apple was eaten. 
-
-
-
-
             // Apple eating situation 
             // 1. Check if the snake head overlaps with apple 
             // 2. If yes, update score +1 
@@ -197,16 +158,6 @@ class Program
                 apple.Respawn(snake, gridRows, gridCols, score);
                 center = CellToCenter(apple.row, apple.col, squareSize);
             }
-            // old code
-            // if (snake.HasEaten(apple.appleRow, apple.appleCol))
-            // {
-            //     score += 1;
-            //     Console.WriteLine("Score:" + score);
-            //     secondsToMove *= speedFactor;
-            //     apple.appleRow = rng.Next(0, gridRows);
-            //     apple.appleCol = rng.Next(0, gridCols);
-            //     center = CellToCenter(apple.appleRow, apple.appleCol, squareSize);
-            // }
 
             // DRAWING SECTION 
             Raylib.BeginDrawing();
@@ -217,15 +168,24 @@ class Program
             // Draw the circle, it's randomised once per run now 
             Raylib.DrawCircleV(center, radius, Color.Red);
 
-            Raylib.DrawRectangleRec(CellToRectangle(snake.snakeCol, snake.snakeRow, squareSize), Color.Green);
-
-            // making sure the drawing is only happening after first apple eaten to avoid boxes in the corner
-            if (score > 0)
+            for (int i = 0; i <= score; i += 1)
             {
-                for (int i = 0; i <= score; i += 1)
+                int row;
+                int col;
+
+                if (i == 0 && score == 0)
                 {
-                    Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
+                    row = snake.snakeRow;
+                    col = snake.snakeCol;
                 }
+
+                else
+                {
+                    row = snake.prevLocRow[i];
+                    col = snake.prevLocCol[i];
+                }
+
+                Raylib.DrawRectangleRec(CellToRectangle(col, row, squareSize), Color.Green);
             }
 
             // code to display the score

@@ -52,22 +52,10 @@ public class Snek
         snakeCol += D[(int)direction, 1];
 
         // wrapping around situ
-        if (snakeRow >= gridRows)
-        {
-        snakeRow = 0;
-        }
-        if (snakeRow < 0)
-        {
-        snakeRow = gridRows - 1;
-        }
-        if (snakeCol >= gridCols)
-        {
-        snakeCol = 0;
-        }
-        if (snakeCol < 0)
-        {
-         snakeCol = gridCols - 1;
-        }
+        if (snakeRow >= gridRows){snakeRow = 0;}
+        if (snakeRow < 0){snakeRow = gridRows - 1;}
+        if (snakeCol >= gridCols){snakeCol = 0;}
+        if (snakeCol < 0){snakeCol = gridCols - 1;}
 
     }
 
