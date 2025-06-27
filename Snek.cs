@@ -9,10 +9,10 @@ public class Snek
 {
     public enum Direction
     {
-        Up = 3,
-        Down = 1,
-        Left = 2,
-        Right = 0,
+        Right,
+        Down,
+        Left,
+        Up
     }
 
     // starting position and direction of the snake
@@ -127,5 +127,5 @@ public class Apple
             col = rng.Next(0, gridCols);
         }
     }
-    
+
 }
