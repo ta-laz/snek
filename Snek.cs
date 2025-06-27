@@ -64,16 +64,6 @@ public class Snek
         this.direction = direction;
     }
 
-    public bool HasEaten(int appleRow, int appleCol)
-    {
-        // This only checks the head of the snake. 
-        if ((snakeRow == appleRow) && (snakeCol == appleCol))
-        {
-            return true;
-        }
-        return false;
-    }
-
     public bool Overlaps(int row, int col, int score, bool skipHead = false)
     {
         // 1. Check the head 
@@ -107,21 +97,25 @@ public class Snek
         return false;
     }
 }
-/// //////////////////////////////////////////
+// ----------------------------------------------------------------
 public class Apple
 {
     public int row;
     public int col;
 
+    public int gridRows;
+    public int gridCols;
     static Random rng = new Random();
 
     // constructor:
     public Apple(Snek snake, int gridRows, int gridCols, int score)
     {
-        this.Respawn(snake, gridRows, gridCols, score);
+        this.gridRows = gridRows;
+        this.gridCols = gridCols;
+        this.Respawn(snake, score);
     }
 
-    public void Respawn(Snek snake, int gridRows, int gridCols, int score)
+    public void Respawn(Snek snake, int score)
     {
         row = rng.Next(0, gridRows);
         col = rng.Next(0, gridCols);
@@ -133,27 +127,5 @@ public class Apple
             col = rng.Next(0, gridCols);
         }
     }
-
-    public void Overlaps(Snek snake, int score, int gridRows, int gridCols)
-    {
-        // if the head overlaps, then add to the score
-        // I dont think this bit should be here cause 
-        // the HasEaten is used to do more stuff
-
-        // if (appleRow == snake.snakeRow && appleCol == snake.snakeCol)
-        // {
-        //     score += 1;
-        // }
-        // if body overlaps then respawn apple 
-        for (int i = 0; i < score; i++)
-        {
-            while (row == snake.prevLocRow[i] && col == snake.prevLocCol[i])
-            {
-                row = rng.Next(0, gridRows);
-                col = rng.Next(0, gridCols);
-                i = -1;
-                break;
-            }
-        }
-    }
+    
 }

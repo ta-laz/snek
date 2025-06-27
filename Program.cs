@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 using Raylib_cs;
 
 namespace Snek;
@@ -125,37 +124,28 @@ class Program
             {
                 lastFrameMoved = currentFrame;
                 snake.Move(gridRows, gridCols);
-                Console.WriteLine(snake.snakeRow);
-                Console.WriteLine(snake.snakeCol);
-                
-                foreach (var item in snake.prevLocRow)
-                {
-                    Console.Write(item.ToString(), ", ");
-                }
-                Console.WriteLine();
-
-                foreach (var item in snake.prevLocCol)
-                {
-                    Console.Write(item.ToString(), ", ");
-                }
-                Console.WriteLine();
-
                 gameOver = snake.Overlaps(snake.snakeRow, snake.snakeCol, score, skipHead: true);
             }
 
-            // Apple eating situation 
-            // 1. Check if the snake head overlaps with apple 
-            // 2. If yes, update score +1 
-            // 3. Speed up the snake 
-            // 4. Respawn the apple 
-            // 5. Update the center of where the apple needs to be drawn
+            // Debug code for printnig arrays 
+            // foreach (var item in snake.prevLocRow)
+            // {
+            //     Console.Write(item.ToString(), ", ");
+            // }
+            // Console.WriteLine();
+
+            // foreach (var item in snake.prevLocCol)
+            // {
+            //     Console.Write(item.ToString(), ", ");
+            // }
+            // Console.WriteLine();
 
             if (snake.Overlaps(apple.row, apple.col, score))
             {
                 score += 1;
                 Console.WriteLine("Score:" + score);
                 secondsToMove *= speedFactor; //if i include this will it not be too big?
-                apple.Respawn(snake, gridRows, gridCols, score);
+                apple.Respawn(snake, score);
                 center = CellToCenter(apple.row, apple.col, squareSize);
             }
 
