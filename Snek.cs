@@ -17,8 +17,8 @@ public class Snek
 
     // starting position and direction of the snake
 
-    public int[] row;
-    public int[] col;
+    public int[] rows;
+    public int[] cols;
 
     public Direction direction = Direction.Right;
 
@@ -27,34 +27,47 @@ public class Snek
 
     public Snek(int topScore)
     {
-        row = new int[topScore + 1];
-        col = new int[topScore + 1];
+        rows = new int[topScore + 1];
+        cols = new int[topScore + 1];
 
-        row[0] = 10;
-        col[0] = 10;
+        rows[0] = 10;
+        cols[0] = 10;
     }
 
+    // snek properties for row and col 
+    public int HeadRow
+    {
+        get { return rows[0]; }
+        set { rows[0] = value; }
+    }
+
+    public int HeadCol
+    {
+        get { return cols[0]; }
+        set { cols[0] = value; }
+    }
+    
     // methods now
     public void Move(int gridRows, int gridCols)
     {
         //keeps track of all of the snake
-        int a = row.Length - 2;
+        int a = rows.Length - 2;
         while (a >= 0)
 
         {
-            row[a + 1] = row[a];
-            col[a + 1] = col[a];
+            rows[a + 1] = rows[a];
+            cols[a + 1] = cols[a];
             a = a - 1;
         }
 
-        row[0] += D[(int)direction, 0];
-        col[0] += D[(int)direction, 1];
+        this.HeadRow += D[(int)direction, 0];
+        this.HeadCol += D[(int)direction, 1];
 
         // wrapping around situ
-        if (row[0] >= gridRows) { row[0] = 0; }
-        if (row[0] < 0) { row[0] = gridRows - 1; }
-        if (col[0] >= gridCols) { col[0] = 0; }
-        if (col[0] < 0) { col[0] = gridCols - 1; }
+        if (this.HeadRow >= gridRows) { this.HeadRow = 0; }
+        if (this.HeadRow < 0) { this.HeadRow = gridRows - 1; }
+        if (this.HeadCol >= gridCols) { this.HeadCol = 0; }
+        if (this.HeadCol < 0) { this.HeadCol = gridCols - 1; }
 
     }
 
@@ -66,7 +79,7 @@ public class Snek
     public bool Overlaps(int rowNew, int colNew, int score, bool skipHead = false)
     {
         // 1. Check the head 
-        if (!skipHead && row[0] == rowNew && col[0] == colNew)
+        if (!skipHead && this.HeadRow == rowNew && this.HeadCol == colNew)
         {
             return true;
         }
@@ -74,7 +87,7 @@ public class Snek
         {
             for (int i = 1; i < score; i++)
             {
-                if (row[i] == rowNew && col[i] ==
+                if (rows[i] == rowNew && cols[i] ==
                  colNew)
                 {
                     return true;

@@ -124,7 +124,7 @@ class Program
             {
                 lastFrameMoved = currentFrame;
                 snake.Move(gridRows, gridCols);
-                gameOver = snake.Overlaps(snake.row[0], snake.col[0], score, skipHead: true);
+                gameOver = snake.Overlaps(snake.rows[0], snake.cols[0], score, skipHead: true);
             }
 
             // Debug code for printnig arrays 
@@ -165,14 +165,14 @@ class Program
 
                 if (i == 0 && score == 0)
                 {
-                    row = snake.row[0];
-                    col = snake.col[0];
+                    row = snake.HeadRow;
+                    col = snake.HeadCol;
                 }
 
                 else
                 {
-                    row = snake.row[i];
-                    col = snake.col[i];
+                    row = snake.rows[i];
+                    col = snake.cols[i];
                 }
 
                 Raylib.DrawRectangleRec(CellToRectangle(col, row, squareSize), Color.Green);
