@@ -46,7 +46,7 @@ public class Snek
         get { return cols[0]; }
         set { cols[0] = value; }
     }
-    
+
     // methods now
     public void Move(int gridRows, int gridCols)
     {
@@ -96,7 +96,7 @@ public class Snek
             return false;
         }
     }
-    
+
 }
 // ----------------------------------------------------------------
 public class Apple
