@@ -1,9 +1,28 @@
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Raylib_cs;
 
 namespace Snek;
+
+public struct Cord
+{
+    public int X;
+    public int Y;
+
+    // TODO: not really needed, see Grid.
+    public Cord(int x, int y)
+    {
+        X = x;
+        Y = y;
+    }
+
+    public readonly bool Equals(Cord other)
+    {
+        return (this.X == other.X) && (this.Y == other.Y);
+    }
+}
 
 public class Snek
 {
@@ -16,10 +35,7 @@ public class Snek
     }
 
     // starting position and direction of the snake
-
-    public int[] rows;
-    public int[] cols;
-
+    public Cord[] snakeCords;
     public Direction direction = Direction.Right;
 
     // direction in which it can move
@@ -27,48 +43,42 @@ public class Snek
 
     public Snek(int topScore)
     {
-        rows = new int[topScore + 1];
-        cols = new int[topScore + 1];
-
-        rows[0] = 10;
-        cols[0] = 10;
+        snakeCords = new Cord[topScore + 1];
+        snakeCords[0] = new Cord(10, 10);
     }
 
     // snek properties for row and col 
-    public int HeadRow
+    public Cord Head
     {
-        get { return rows[0]; }
-        set { rows[0] = value; }
-    }
-
-    public int HeadCol
-    {
-        get { return cols[0]; }
-        set { cols[0] = value; }
+        get { return snakeCords[0]; }
+        set { snakeCords[0] = value; }
     }
 
     // methods now
-    public void Move(int gridRows, int gridCols)
+    public void Move(Grid grid)
     {
         //keeps track of all of the snake
-        int a = rows.Length - 2;
+        int a = snakeCords.Length - 2;
         while (a >= 0)
 
         {
-            rows[a + 1] = rows[a];
-            cols[a + 1] = cols[a];
+            snakeCords[a + 1] = snakeCords[a];
             a = a - 1;
         }
 
-        this.HeadRow += D[(int)direction, 0];
-        this.HeadCol += D[(int)direction, 1];
+        //endless faff of using structs fml 
+        Cord newHead = Head;
+
+        newHead.X += D[(int)direction, 0];
+        newHead.Y += D[(int)direction, 1];
 
         // wrapping around situ
-        if (this.HeadRow >= gridRows) { this.HeadRow = 0; }
-        if (this.HeadRow < 0) { this.HeadRow = gridRows - 1; }
-        if (this.HeadCol >= gridCols) { this.HeadCol = 0; }
-        if (this.HeadCol < 0) { this.HeadCol = gridCols - 1; }
+        if (newHead.X >= grid.cols) { newHead.X = 0; }
+        if (newHead.X < 0) { newHead.X = grid.cols - 1; }
+        if (newHead.Y >= grid.rows) { newHead.Y = 0; }
+        if (newHead.Y < 0) { newHead.Y = grid.rows - 1; }
 
+        Head = newHead;
     }
 
     public void SetDirection(Direction direction)
@@ -76,10 +86,10 @@ public class Snek
         this.direction = direction;
     }
 
-    public bool Overlaps(int rowNew, int colNew, int score, bool skipHead = false)
+    public bool Overlaps(Cord newSnakeCords, int score, bool skipHead = false)
     {
         // 1. Check the head 
-        if (!skipHead && this.HeadRow == rowNew && this.HeadCol == colNew)
+        if (!skipHead && Head.Equals(newSnakeCords))
         {
             return true;
         }
@@ -87,8 +97,7 @@ public class Snek
         {
             for (int i = 1; i < score; i++)
             {
-                if (rows[i] == rowNew && cols[i] ==
-                 colNew)
+                if (snakeCords[i].Equals(newSnakeCords))
                 {
                     return true;
                 }
@@ -101,31 +110,29 @@ public class Snek
 // ----------------------------------------------------------------
 public class Apple
 {
-    public int row;
-    public int col;
+    public Cord appleCords;
 
-    public int gridRows;
-    public int gridCols;
+    public Grid grid;
+
     static Random rng = new Random();
 
     // constructor:
-    public Apple(Snek snake, int gridRows, int gridCols, int score)
+    public Apple(Snek snake, Grid grid, int score)
     {
-        this.gridRows = gridRows;
-        this.gridCols = gridCols;
+        this.grid = grid;
         this.Respawn(snake, score);
     }
 
     public void Respawn(Snek snake, int score)
     {
-        row = rng.Next(0, gridRows);
-        col = rng.Next(0, gridCols);
+        appleCords.X = rng.Next(0, grid.cols);
+        appleCords.Y = rng.Next(0, grid.rows);
 
         /* check if apple overlaps with any part of the snake  */
-        while (snake.Overlaps(row, col, score))
+        while (snake.Overlaps(appleCords, score))
         {
-            row = rng.Next(0, gridRows);
-            col = rng.Next(0, gridCols);
+            appleCords.X = rng.Next(0, grid.cols);
+            appleCords.Y = rng.Next(0, grid.rows);
         }
     }
 
