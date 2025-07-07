@@ -71,9 +71,48 @@ class Program
     }
 
 
-    // public void Draw(Grid grid, Snek snake, Apple apple, bool gameOver, Config config)
+    // public void Draw(Grid grid, Snek snake, Apple apple, bool gameOver, Config config, int score)
     // {
+    //     // this still feels like a bit of a cluster fuck tbh, maybe a class that has all this and the other celltocenter and drawgrid bits in one? 
 
+    //     // should this be in here? 
+    //     Vector2 center = CellToCenter(apple.appleCords, config.squareSize);
+
+    //     // Draw the grid 
+    //     DrawGrid(grid, config.squareSize);
+
+    //     // Draw the apple, it's randomised once per run now 
+    //     Raylib.DrawCircleV(center, config.radius, Color.Red);
+
+    //     for (int i = 0; i <= score; i += 1)
+    //     {
+    //         int row;
+    //         int col;
+
+    //         if (i == 0 && score == 0)
+    //         {
+    //             row = snake.Head.X;
+    //             col = snake.Head.Y;
+    //         }
+
+    //         else
+    //         {
+    //             row = snake.snakeCords[i].X;
+    //             col = snake.snakeCords[i].Y;
+    //         }
+
+    //         // Draw the snake 
+    //         Raylib.DrawRectangleRec(CellToRectangle(col, row, config.squareSize), Color.Green);
+    //     }
+
+    //     // code to display the score
+    //     Raylib.DrawRectangle(0, 800, config.windowWidth, 100, Color.LightGray);
+    //     Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
+
+    //     if (gameOver)
+    //     {
+    //         Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
+    //     }
     // }
 
     // Random number generator  
@@ -120,19 +159,6 @@ class Program
                 snake.Move(grid);
                 gameOver = snake.Overlaps(snake.Head, score, skipHead: true);
             }
-
-            // Debug code for printnig arrays 
-            // foreach (var item in snake.prevLocRow)
-            // {
-            //     Console.Write(item.ToString(), ", ");
-            // }
-            // Console.WriteLine();
-
-            // foreach (var item in snake.prevLocCol)
-            // {
-            //     Console.Write(item.ToString(), ", ");
-            // }
-            // Console.WriteLine();
 
             if (snake.Overlaps(apple.appleCords, score))
             {
