@@ -11,13 +11,6 @@ public struct Cord
     public int X;
     public int Y;
 
-    // TODO: not really needed, see Grid.
-    public Cord(int x, int y)
-    {
-        X = x;
-        Y = y;
-    }
-
     public readonly bool Equals(Cord other)
     {
         return (this.X == other.X) && (this.Y == other.Y);
@@ -44,7 +37,7 @@ public class Snek
     public Snek(int topScore)
     {
         snakeCords = new Cord[topScore + 1];
-        snakeCords[0] = new Cord(10, 10);
+        snakeCords[0] = new() { X = 10, Y = 10 };
     }
 
     // snek properties for row and col 
