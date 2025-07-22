@@ -5,13 +5,8 @@ namespace Snek;
 
 public struct Grid
 {
-    public int rows;
-    public int cols;
-
-    public Grid()
-    {
-        Console.WriteLine("hi");
-    }
+    public int rows; // y
+    public int cols; // x
 }
 
 public struct Config
@@ -37,7 +32,7 @@ public struct Config
         startingSpeed = 1.0,
         speedFactor = 0.8,
         maximumLength = 11,
-    }; // there's.a ; because this is a property definition 
+    }; // there's a ; because this is a property definition 
 
 }
 
@@ -49,13 +44,13 @@ class Program
     }
 
     // trying to draw the apple shape? 
-    static Vector2 CellToCenter(Cord appleCord, int size)
+    static Vector2 CellToCenter(Cord coords, int size)
     {
         // Uhhh, we're converting thaaa indices of the cells into 
         // the centers of where they need to drawn (in the pixel world :o )
-        float centerX = size * (appleCord.Y + 0.5f);
-        float centerY = size * (appleCord.X + 0.5f);
-        return new Vector2(centerX, centerY);
+        float centerVertical = size * (coords.row + 0.5f);
+        float centerHorizontal = size * (coords.col + 0.5f);
+        return new Vector2(centerVertical, centerHorizontal);
     }
 
     static void DrawGrid(Grid grid, int size)
@@ -136,7 +131,7 @@ class Program
         Snek snake = new(config.maximumLength);
         Apple apple = new(snake, grid, score);
 
-        Vector2 center = CellToCenter(apple.appleCords, config.squareSize);
+        Vector2 center = CellToCenter(apple.coords, config.squareSize);
 
         Raylib.InitWindow(config.windowWidth, config.windowHeight, "Snek");
 
@@ -160,13 +155,13 @@ class Program
                 gameOver = snake.Overlaps(snake.Head, score, skipHead: true);
             }
 
-            if (snake.Overlaps(apple.appleCords, score))
+            if (snake.Overlaps(apple.coords, score))
             {
                 score += 1;
                 Console.WriteLine("Score:" + score);
                 secondsToMove *= config.speedFactor; //if i include this will it not be too big?
                 apple.Respawn(snake, score);
-                center = CellToCenter(apple.appleCords, config.squareSize);
+                center = CellToCenter(apple.coords, config.squareSize);
             }
 
             // DRAWING SECTION 
@@ -185,14 +180,14 @@ class Program
 
                 if (i == 0 && score == 0)
                 {
-                    row = snake.Head.X;
-                    col = snake.Head.Y;
+                    row = snake.Head.col;
+                    col = snake.Head.row;
                 }
 
                 else
                 {
-                    row = snake.snakeCords[i].X;
-                    col = snake.snakeCords[i].Y;
+                    row = snake.snakeCords[i].col;
+                    col = snake.snakeCords[i].row;
                 }
 
                 Raylib.DrawRectangleRec(CellToRectangle(col, row, config.squareSize), Color.Green);

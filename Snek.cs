@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -8,16 +7,18 @@ namespace Snek;
 
 public struct Cord
 {
-    public int X;
-    public int Y;
+    public int col;
+    public int row;
 
     public readonly bool Equals(Cord other)
     {
-        return (this.X == other.X) && (this.Y == other.Y);
+        return (this.col == other.col) && (this.row == other.row);
     }
 }
 
 public class Snek
+
+
 {
     public enum Direction
     {
@@ -37,7 +38,7 @@ public class Snek
     public Snek(int topScore)
     {
         snakeCords = new Cord[topScore + 1];
-        snakeCords[0] = new() { X = 10, Y = 10 };
+        snakeCords[0] = new() { col = 10, row = 10 };
     }
 
     // snek properties for row and col 
@@ -59,17 +60,16 @@ public class Snek
             a = a - 1;
         }
 
-        //endless faff of using structs fml 
         Cord newHead = Head;
 
-        newHead.X += D[(int)direction, 0];
-        newHead.Y += D[(int)direction, 1];
+        newHead.col += D[(int)direction, 0];
+        newHead.row += D[(int)direction, 1];
 
         // wrapping around situ
-        if (newHead.X >= grid.cols) { newHead.X = 0; }
-        if (newHead.X < 0) { newHead.X = grid.cols - 1; }
-        if (newHead.Y >= grid.rows) { newHead.Y = 0; }
-        if (newHead.Y < 0) { newHead.Y = grid.rows - 1; }
+        if (newHead.col >= grid.cols) { newHead.col = 0; }
+        if (newHead.col < 0) { newHead.col = grid.cols - 1; }
+        if (newHead.row >= grid.rows) { newHead.row = 0; }
+        if (newHead.row < 0) { newHead.row = grid.rows - 1; }
 
         Head = newHead;
     }
@@ -103,7 +103,7 @@ public class Snek
 // ----------------------------------------------------------------
 public class Apple
 {
-    public Cord appleCords;
+    public Cord coords;
 
     public Grid grid;
 
@@ -118,14 +118,14 @@ public class Apple
 
     public void Respawn(Snek snake, int score)
     {
-        appleCords.X = rng.Next(0, grid.cols);
-        appleCords.Y = rng.Next(0, grid.rows);
+        coords.col = rng.Next(0, grid.cols);
+        coords.row = rng.Next(0, grid.rows);
 
         /* check if apple overlaps with any part of the snake  */
-        while (snake.Overlaps(appleCords, score))
+        while (snake.Overlaps(coords, score))
         {
-            appleCords.X = rng.Next(0, grid.cols);
-            appleCords.Y = rng.Next(0, grid.rows);
+            coords.col = rng.Next(0, grid.cols);
+            coords.row = rng.Next(0, grid.rows);
         }
     }
 
