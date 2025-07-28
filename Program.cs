@@ -3,6 +3,39 @@ using Raylib_cs;
 
 namespace Snek;
 
+public struct Grid
+{
+    public int rows; // y
+    public int cols; // x
+}
+
+public struct Config
+{
+    public int windowWidth;
+    public int windowHeight;
+    public int gridRows;
+    public int gridCols;
+
+    public double startingSpeed;
+    public double speedFactor;
+
+    public int maximumLength;
+    public int squareSize => gridRows != 0 ? windowWidth / gridRows : 0;
+    public int radius => squareSize / 2;
+
+    public static Config Default => new Config
+    {
+        windowWidth = 800,
+        windowHeight = 900,
+        gridRows = 20,
+        gridCols = 20,
+        startingSpeed = 1.0,
+        speedFactor = 0.8,
+        maximumLength = 11,
+    }; // there's a ; because this is a property definition 
+
+}
+
 class Program
 {
     static Rectangle CellToRectangle(int row, int col, int size)
@@ -11,20 +44,20 @@ class Program
     }
 
     // trying to draw the apple shape? 
-    static Vector2 CellToCenter(int row, int col, int size)
+    static Vector2 CellToCenter(Cord coords, int size)
     {
         // Uhhh, we're converting thaaa indices of the cells into 
         // the centers of where they need to drawn (in the pixel world :o )
-        float centerX = size * (col + 0.5f);
-        float centerY = size * (row + 0.5f);
-        return new Vector2(centerX, centerY);
+        float centerVertical = size * (coords.row + 0.5f);
+        float centerHorizontal = size * (coords.col + 0.5f);
+        return new Vector2(centerVertical, centerHorizontal);
     }
 
-    static void DrawGrid(int rows, int cols, int size)
+    static void DrawGrid(Grid grid, int size)
     {
-        for (int row = 0; row < rows; row += 1)
+        for (int row = 0; row < grid.cols; row += 1)
         {
-            for (int col = 0; col < cols; col += 1)
+            for (int col = 0; col < grid.rows; col += 1)
             {
                 Rectangle cellSquare = CellToRectangle(col, row, size);
                 Raylib.DrawRectangleLinesEx(cellSquare, 0.5f, Color.DarkGray);
@@ -32,39 +65,49 @@ class Program
         }
     }
 
-    // public void Draw(int gridRows, int gridCols, int squareSize, Snek snake, Apple apple, int score, int windowWidth, bool gameOver, Vector2 center, int radius)
+
+    // public void Draw(Grid grid, Snek snake, Apple apple, bool gameOver, Config config, int score)
     // {
-    //     Raylib.BeginDrawing();
-    //     Raylib.ClearBackground(Color.White);
-    //     DrawGrid(gridRows, gridCols, squareSize);
+    //     // this still feels like a bit of a cluster fuck tbh, maybe a class that has all this and the other celltocenter and drawgrid bits in one? 
 
-    //     // Draw the apple
-    //     Raylib.DrawCircleV(center, radius, Color.Red);
+    //     // should this be in here? 
+    //     Vector2 center = CellToCenter(apple.appleCords, config.squareSize);
 
-    //     // Draw the head of the snake  
-    //     Raylib.DrawRectangleRec(CellToRectangle(snake.snakeCol, snake.snakeRow, squareSize), Color.Green);
+    //     // Draw the grid 
+    //     DrawGrid(grid, config.squareSize);
 
-    //     // Draw the body of the snake 
-    //     if (score > 0)
+    //     // Draw the apple, it's randomised once per run now 
+    //     Raylib.DrawCircleV(center, config.radius, Color.Red);
+
+    //     for (int i = 0; i <= score; i += 1)
     //     {
-    //         for (int i = 0; i <= score; i += 1)
+    //         int row;
+    //         int col;
+
+    //         if (i == 0 && score == 0)
     //         {
-    //             Raylib.DrawRectangleRec(CellToRectangle(snake.prevLocCol[i], snake.prevLocRow[i], squareSize), Color.Green);
+    //             row = snake.Head.X;
+    //             col = snake.Head.Y;
     //         }
+
+    //         else
+    //         {
+    //             row = snake.snakeCords[i].X;
+    //             col = snake.snakeCords[i].Y;
+    //         }
+
+    //         // Draw the snake 
+    //         Raylib.DrawRectangleRec(CellToRectangle(col, row, config.squareSize), Color.Green);
     //     }
 
-    //     // Display the score
-    //     Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
+    //     // code to display the score
+    //     Raylib.DrawRectangle(0, 800, config.windowWidth, 100, Color.LightGray);
     //     Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
 
-    //     // Display game over 
     //     if (gameOver)
     //     {
     //         Raylib.DrawText("GAME OVER", 600, 820, 30, Color.Red);
     //     }
-
-    //     // End the drawing
-    //     Raylib.EndDrawing();
     // }
 
     // Random number generator  
@@ -72,40 +115,25 @@ class Program
 
     public static void Main()
     {
-
-        // CONFIGURATION SECTION 
-        // (Settings page in a game for example)
-        int windowWidth = 800;
-        int windowHeight = 900;
-        int gridRows = 20;
-        int gridCols = 20;
-
-        bool gameOver = false;
-
-        int squareSize = windowWidth / gridRows;
-        int radius = squareSize / 2;
-
-        double startingSpeed = 1.0;
-        double speedFactor = 0.8;
-
-        int maximumLength = 11;
-
-        Raylib.InitWindow(windowWidth, windowHeight, "Snek");
-
-        Snek snake = new(maximumLength);
+        Config config = Config.Default;
 
         // STATE SECTION 
         // Just means all the things that your program has to keep in mind while it's running.
-        // (maybe updated each game loop)
         double lastFrameMoved = 0;
-        double secondsToMove = startingSpeed;
+        double secondsToMove = config.startingSpeed;
 
         int score = 0;
 
-        // Create a new apple
-        Apple apple = new(snake, gridRows, gridCols, score);
+        bool gameOver = false;
 
-        Vector2 center = CellToCenter(apple.row, apple.col, squareSize);
+        // Create a new snake and apple
+        Grid grid = new() { rows = config.gridRows, cols = config.gridCols };
+        Snek snake = new(config.maximumLength);
+        Apple apple = new(snake, grid, score);
+
+        Vector2 center = CellToCenter(apple.coords, config.squareSize);
+
+        Raylib.InitWindow(config.windowWidth, config.windowHeight, "Snek");
 
         // where the actual loop that we want running goes (frames changing)
         while (!Raylib.WindowShouldClose())
@@ -123,40 +151,27 @@ class Program
             if (!gameOver && currentFrame - lastFrameMoved >= secondsToMove)
             {
                 lastFrameMoved = currentFrame;
-                snake.Move(gridRows, gridCols);
-                gameOver = snake.Overlaps(snake.snakeRow, snake.snakeCol, score, skipHead: true);
+                snake.Move(grid);
+                gameOver = snake.Overlaps(snake.Head, score, skipHead: true);
             }
 
-            // Debug code for printnig arrays 
-            // foreach (var item in snake.prevLocRow)
-            // {
-            //     Console.Write(item.ToString(), ", ");
-            // }
-            // Console.WriteLine();
-
-            // foreach (var item in snake.prevLocCol)
-            // {
-            //     Console.Write(item.ToString(), ", ");
-            // }
-            // Console.WriteLine();
-
-            if (snake.Overlaps(apple.row, apple.col, score))
+            if (snake.Overlaps(apple.coords, score))
             {
                 score += 1;
                 Console.WriteLine("Score:" + score);
-                secondsToMove *= speedFactor; //if i include this will it not be too big?
+                secondsToMove *= config.speedFactor; //if i include this will it not be too big?
                 apple.Respawn(snake, score);
-                center = CellToCenter(apple.row, apple.col, squareSize);
+                center = CellToCenter(apple.coords, config.squareSize);
             }
 
             // DRAWING SECTION 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.White);
 
-            DrawGrid(gridRows, gridCols, squareSize);
+            DrawGrid(grid, config.squareSize);
 
             // Draw the circle, it's randomised once per run now 
-            Raylib.DrawCircleV(center, radius, Color.Red);
+            Raylib.DrawCircleV(center, config.radius, Color.Red);
 
             for (int i = 0; i <= score; i += 1)
             {
@@ -165,21 +180,21 @@ class Program
 
                 if (i == 0 && score == 0)
                 {
-                    row = snake.snakeRow;
-                    col = snake.snakeCol;
+                    row = snake.Head.col;
+                    col = snake.Head.row;
                 }
 
                 else
                 {
-                    row = snake.prevLocRow[i];
-                    col = snake.prevLocCol[i];
+                    row = snake.snakeCords[i].col;
+                    col = snake.snakeCords[i].row;
                 }
 
-                Raylib.DrawRectangleRec(CellToRectangle(col, row, squareSize), Color.Green);
+                Raylib.DrawRectangleRec(CellToRectangle(col, row, config.squareSize), Color.Green);
             }
 
             // code to display the score
-            Raylib.DrawRectangle(0, 800, windowWidth, 100, Color.LightGray);
+            Raylib.DrawRectangle(0, 800, config.windowWidth, 100, Color.LightGray);
             Raylib.DrawText($"Score: {score}", 20, 820, 30, Color.Black);
 
             if (gameOver)
